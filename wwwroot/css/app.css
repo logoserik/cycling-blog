@@ -1,0 +1,270 @@
+/* Light-mode 8-bit theme on top of NES.css
+   Desktop canvas: 1280x720. iPhone / iPad use fluid full-viewport layout. */
+
+:root {
+    --cream: #f6f0d8;
+    --ink: #000;
+    --frame-width: 1280px;
+    --frame-min-height: 720px;
+}
+
+html {
+    font-size: 18px;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+html,
+body {
+    min-height: 100%;
+    min-height: 100dvh;
+}
+
+body {
+    margin: 0;
+    background: var(--cream);
+    font-family: "Press Start 2P", monospace;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+#app {
+    min-height: calc(100dvh - 4.5rem);
+    display: flex;
+    justify-content: center;
+}
+
+#game-frame {
+    width: min(var(--frame-width), 100%);
+    min-height: var(--frame-min-height);
+    margin: 24px auto;
+    padding: 32px 40px 40px;
+    box-sizing: border-box;
+    border: 4px solid var(--ink);
+    text-align: left;
+}
+
+#game-frame.is-centered {
+    text-align: left;
+}
+
+.pixel-title {
+    letter-spacing: 2px;
+    font-size: 1.25rem;
+    text-align: center;
+}
+
+.nav-row {
+    margin: 16px 0 8px;
+}
+
+.nes-nav {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.nes-nav .nes-btn {
+    min-height: 48px;
+    min-width: 132px;
+    padding: 10px 18px;
+    font-size: 0.85rem;
+}
+
+.content-row {
+    margin-top: 16px;
+}
+
+.content-row > h2.nes-text {
+    font-size: 1.1rem;
+    text-align: center;
+    margin: 8px 0 24px;
+}
+
+.ride-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    padding: 8px 0;
+}
+
+.ride-card {
+    text-decoration: none;
+    color: inherit;
+}
+
+.ride-card-body {
+    padding: 14px 8px 8px;
+}
+
+.ride-thumb {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    border: 3px solid var(--ink);
+    margin-top: 14px;
+}
+
+.ride-date {
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+}
+
+.ride-excerpt {
+    min-height: 4.5rem;
+    overflow: hidden;
+    line-height: 1.6;
+    font-size: 0.72rem;
+}
+
+.ride-tags,
+.ride-tags-inline {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ride-detail h2.nes-text {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.ride-detail .ride-hero {
+    width: 100%;
+    max-height: 420px;
+    object-fit: cover;
+    border: 3px solid var(--ink);
+    margin-bottom: 18px;
+}
+
+.ride-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 18px;
+    font-size: 0.8rem;
+}
+
+.ride-html .ride-body {
+    padding: 12px 4px;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    text-align: left;
+}
+
+.ride-html h1,
+.ride-html h2,
+.ride-html h3,
+.ride-body h1,
+.ride-body h2,
+.ride-body h3 {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.ride-html p,
+.ride-html li,
+.ride-body p,
+.ride-body li {
+    line-height: 1.7;
+}
+
+.ride-html img,
+.ride-body img,
+.ride-html figure,
+.ride-body figure {
+    max-width: 100%;
+}
+
+.ride-html img,
+.ride-body img {
+    height: auto;
+    display: block;
+    border: 3px solid var(--ink);
+    margin: 16px 0;
+}
+
+.ride-html figcaption,
+.ride-body figcaption {
+    font-size: 0.65rem;
+    margin-bottom: 16px;
+}
+
+.pixel-footer {
+    margin: 16px 0 24px;
+    text-align: center;
+    font-size: 0.7rem;
+}
+
+/* Below 1280: fill the viewport (small laptops, iPad landscape) */
+@media (max-width: 1279px) {
+    html {
+        font-size: 16px;
+    }
+
+    #game-frame {
+        width: 100%;
+        min-height: 100dvh;
+        margin: 0;
+        border-left: none;
+        border-right: none;
+        border-radius: 0;
+    }
+}
+
+/* iPad portrait */
+@media (min-width: 768px) and (max-width: 1024px) {
+    #game-frame {
+        padding: 28px 28px 36px;
+    }
+
+    .ride-thumb {
+        height: 220px;
+    }
+}
+
+/* iPhone and other phones */
+@media (max-width: 767px) {
+    html {
+        font-size: 14px;
+    }
+
+    #game-frame {
+        min-height: 100dvh;
+        margin: 0;
+        padding: 18px 14px 28px;
+        border-width: 0;
+    }
+
+    .pixel-title {
+        font-size: 1rem;
+    }
+
+    .ride-list {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .ride-thumb {
+        height: 200px;
+    }
+
+    .nes-nav .nes-btn {
+        flex: 1 1 140px;
+        min-height: 44px;
+    }
+
+    .ride-detail .ride-hero {
+        max-height: 240px;
+    }
+}
+
+/* iPhone SE / narrow */
+@media (max-width: 390px) {
+    html {
+        font-size: 13px;
+    }
+}

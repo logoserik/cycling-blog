@@ -1,0 +1,53 @@
+name: Deploy (GitHub Pages)
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Refresh content index
+        shell: pwsh
+        run: ./scripts/generate-post-index.ps1
+
+      - name: Publish Blazor
+        run: |
+          sed -i 's|<base href="/" />|<base href="/cycling-blog/" />|' wwwroot/index.html wwwroot/404.html
+          dotnet publish ./CyclingBlog.csproj -c Release -p:PublishDir=./_site
+          cp ./_site/index.html ./_site/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

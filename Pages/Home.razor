@@ -1,0 +1,71 @@
+@page "/"
+@inject BlogContentClient Blog
+
+<h2 class="nes-text">Load your next ride</h2>
+
+@if (_state == LoadState.Loading)
+{
+    <div class="nes-text">Loading rides...</div>
+}
+else if (_state == LoadState.Error)
+{
+    <div class="nes-container is-rounded is-dark">
+        <p class="nes-text is-error">@_error</p>
+    </div>
+}
+else if (_posts.Count == 0)
+{
+    <div class="nes-text">No published rides yet. Add one in the CMS admin.</div>
+}
+else
+{
+    <div class="ride-list">
+        @foreach (var post in _posts)
+        {
+            <a class="ride-card nes-pointer" href="@($"/ride/{post.Slug}")">
+                <div class="ride-card-top nes-container with-title">
+                    <p class="title">@post.Title</p>
+                </div>
+                <div class="ride-card-body">
+                    <div class="ride-date nes-text">@post.PublishedAt?.ToString("yyyy-MM-dd")</div>
+                    <div class="ride-excerpt nes-text">@post.Excerpt</div>
+                    @if (!string.IsNullOrWhiteSpace(post.FeatureImage))
+                    {
+                        <img class="ride-thumb" src="@post.FeatureImage" alt="@post.Title" loading="lazy" />
+                    }
+                    @if (post.Tags.Count > 0)
+                    {
+                        <div class="ride-tags">
+                            @foreach (var tag in post.Tags)
+                            {
+                                <span class="nes-badge">@tag</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </a>
+        }
+    </div>
+}
+
+@code {
+    private enum LoadState { Loading, Ready, Error }
+    private LoadState _state = LoadState.Loading;
+    private string? _error;
+    private List<BlogPostBrief> _posts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _state = LoadState.Loading;
+            _posts = await Blog.BrowsePostsAsync(limit: 20);
+            _state = LoadState.Ready;
+        }
+        catch (Exception ex)
+        {
+            _state = LoadState.Error;
+            _error = ex.Message;
+        }
+    }
+}

@@ -1,0 +1,11 @@
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(CyclingBlog.Shared.MainLayout)" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(CyclingBlog.Shared.MainLayout)">
+            <p class="nes-text is-error">Page not found.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+

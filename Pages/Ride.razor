@@ -1,0 +1,75 @@
+@page "/ride/{slug}"
+@inject BlogContentClient Blog
+
+@if (_state == LoadState.Loading)
+{
+    <div class="nes-text">Loading ride...</div>
+}
+else if (_state == LoadState.Error)
+{
+    <div class="nes-container is-rounded is-dark">
+        <p class="nes-text is-error">@_error</p>
+    </div>
+}
+else if (_post is null)
+{
+    <div class="nes-text is-warning">Ride not found.</div>
+}
+else
+{
+    <div class="ride-detail">
+        <h2 class="nes-text">@_post.Title</h2>
+
+        @if (!string.IsNullOrWhiteSpace(_post.FeatureImage))
+        {
+            <img class="ride-hero" src="@_post.FeatureImage" alt="@_post.Title" />
+        }
+
+        <div class="ride-meta nes-text">
+            <span>@_post.PublishedAt?.ToString("yyyy-MM-dd")</span>
+            @if (_post.Tags.Count > 0)
+            {
+                <span class="ride-tags-inline">
+                    @foreach (var t in _post.Tags)
+                    {
+                        <span class="nes-badge">@t</span>
+                    }
+                </span>
+            }
+        </div>
+
+        <div class="ride-html nes-container with-title" data-testid="ride-html">
+            <p class="title">Ride Log</p>
+            <div class="ride-body">
+                @((MarkupString)_post.Html)
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string? slug { get; set; }
+
+    private enum LoadState { Loading, Ready, Error }
+    private LoadState _state = LoadState.Loading;
+    private string? _error;
+    private BlogPost? _post;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrWhiteSpace(slug))
+            return;
+
+        try
+        {
+            _state = LoadState.Loading;
+            _post = await Blog.ReadPostBySlugAsync(slug!);
+            _state = LoadState.Ready;
+        }
+        catch (Exception ex)
+        {
+            _state = LoadState.Error;
+            _error = ex.Message;
+        }
+    }
+}

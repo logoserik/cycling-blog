@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://unpkg.com/@sveltia/cms/schema/sveltia-cms.json
+
+# REQUIRED: set this to your GitHub repo as owner/name (example: erikl/cycling-blog)
+backend:
+  name: github
+  repo: logoserik/cycling-blog
+  branch: main
+
+# Files land under wwwroot so Blazor/GitHub Pages can serve them as static assets.
+media_folder: wwwroot/uploads
+public_folder: /uploads
+
+collections:
+  - name: posts
+    label: Ride posts
+    label_singular: Ride post
+    folder: wwwroot/content/posts
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    sortable_fields:
+      fields: [date, title]
+      default:
+        field: date
+        direction: descending
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Publish date, name: date, widget: datetime, time_format: false }
+      - { label: Card excerpt, name: excerpt, widget: text, required: false }
+      - {
+          label: Feature image,
+          name: feature_image,
+          widget: image,
+          required: false,
+          hint: "Shown on the home ride card and at the top of the post."
+        }
+      - {
+          label: Tags,
+          name: tags,
+          widget: list,
+          required: false,
+          allow_add: true,
+          field: { label: Tag, name: tag, widget: string }
+        }
+      - { label: Draft, name: draft, widget: boolean, default: false }
+      - {
+          label: Body,
+          name: body,
+          widget: markdown,
+          hint: "Write in Markdown. Use the image button to upload photos into the post."
+        }
