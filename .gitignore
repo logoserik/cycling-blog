@@ -1,0 +1,8 @@
+bin/
+obj/
+publish/
+_site/
+_publish_test/
+.vs/
+*.user
+*.suo

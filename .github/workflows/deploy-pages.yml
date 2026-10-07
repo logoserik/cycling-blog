@@ -16,6 +16,12 @@ concurrency:
   group: "pages"
   cancel-in-progress: true
 
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # GitHub project Pages URL path (must match repo name unless you use a custom domain).
+  SITE_BASE: /cycling-blog/
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,18 +37,64 @@ jobs:
       - name: Refresh content index
         run: bash ./scripts/generate-post-index.sh
 
+      - name: Set Pages base href
+        run: |
+          set -euo pipefail
+          for f in wwwroot/index.html wwwroot/404.html; do
+            test -f "$f"
+            sed -i "s|<base href=\"/\" />|<base href=\"${SITE_BASE}\" />|" "$f"
+            grep -q "<base href=\"${SITE_BASE}\" />" "$f"
+            echo "Updated base href in $f"
+          done
+
       - name: Publish Blazor
         run: |
-          sed -i 's|<base href="/" />|<base href="/cycling-blog/" />|' wwwroot/index.html wwwroot/404.html
-          # Skip the Windows-only PowerShell index target; bash already refreshed index.json.
-          dotnet publish ./CyclingBlog.csproj -c Release -p:PublishDir=./_site -p:GenerateContentIndex=false
-          cp ./_site/index.html ./_site/404.html
+          set -euo pipefail
+          rm -rf publish
+          # Use -o (OutputPath). Blazor static files land in publish/wwwroot/.
+          # Skip Windows-only PowerShell index target; bash already refreshed index.json.
+          dotnet publish ./CyclingBlog.csproj \
+            -c Release \
+            -o ./publish \
+            -p:GenerateContentIndex=false \
+            --verbosity minimal
+          echo "Publish exit code: $?"
 
+      - name: Verify publish output
+        run: |
+          set -euo pipefail
+          SITE=./publish/wwwroot
+          echo "=== publish top ==="
+          ls -la ./publish
+          echo "=== wwwroot top ==="
+          ls -la "$SITE"
+
+          required=(
+            "$SITE/index.html"
+            "$SITE/_framework/blazor.webassembly.js"
+            "$SITE/content/index.json"
+            "$SITE/admin/index.html"
+            "$SITE/admin/config.yml"
+          )
+          for f in "${required[@]}"; do
+            if [[ ! -f "$f" ]]; then
+              echo "::error::Missing required publish file: $f"
+              echo "Full tree:"
+              find ./publish -maxdepth 4 -print
+              exit 1
+            fi
+            echo "OK $f"
+          done
+
+          # SPA fallback for deep links like /ride/slug on GitHub Pages.
+          cp "$SITE/index.html" "$SITE/404.html"
+          test -f "$SITE/404.html"
+          echo "Publish output verified."
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./_site
+          path: ./publish/wwwroot
 
   deploy:
     needs: build

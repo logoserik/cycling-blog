@@ -74,6 +74,10 @@ Important:
 1. Repo → **Settings** → **Pages**
 2. Source: **GitHub Actions**
 
+### Deploy notes
+
+Blazor publish output is `publish/wwwroot/` (not the publish root). The Actions workflow verifies required files before upload. You can re-run anytime via **Actions → Deploy (GitHub Pages) → Run workflow**.
+
 ## Content layout
 
 ```
