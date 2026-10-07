@@ -13,7 +13,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.12" PrivateAssets="all" />
   </ItemGroup>
 
-  <Target Name="GenerateContentIndex" BeforeTargets="BeforeBuild;BeforePublish">
+  <!-- Local Windows builds use PowerShell. CI (Linux) runs scripts/generate-post-index.sh instead. -->
+  <Target Name="GenerateContentIndex"
+          BeforeTargets="BeforeBuild;BeforePublish"
+          Condition="'$(OS)' == 'Windows_NT' And '$(GenerateContentIndex)' != 'false'">
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)/scripts/generate-post-index.ps1&quot;" />
   </Target>
 </Project>
+

@@ -48,7 +48,7 @@ After the site is on GitHub Pages:
 3. Create/edit a **Ride post**, upload photos, publish
 4. Wait for the Actions deploy, then refresh the blog
 
-Local tip: you can also edit Markdown files under `wwwroot/content/posts/` in the editor, then `dotnet run`. After adding a new `.md` file, rebuild once so `scripts/generate-post-index.ps1` refreshes `wwwroot/content/index.json` (this also runs automatically on `dotnet build` / publish).
+Local tip: you can also edit Markdown files under `wwwroot/content/posts/` in the editor, then `dotnet run`. After adding a new `.md` file, rebuild once so `scripts/generate-post-index.ps1` refreshes `wwwroot/content/index.json` (this runs automatically on Windows `dotnet build` / publish). GitHub Actions uses `scripts/generate-post-index.sh` on Linux instead.
 
 ### Photo upload
 

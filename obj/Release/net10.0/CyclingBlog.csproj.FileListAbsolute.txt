@@ -216,8 +216,6 @@ C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\dotn
 C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\icudt_CJK.tjcz0u77k5.dat
 C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\icudt_EFIGS.tptq2av103.dat
 C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\icudt_no_CJK.lfu7j35m59.dat
-C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\CyclingBlog.wi5i29ob00.wasm
-C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\CyclingBlog.uo4oatztfb.pdb
 C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\dotnet.js
 C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\blazor.webassembly.js.gz
 C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\Markdig.ato3fn3juu.wasm.gz
@@ -427,8 +425,6 @@ C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\dotn
 C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\icudt_CJK.tjcz0u77k5.dat.gz
 C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\icudt_EFIGS.tptq2av103.dat.gz
 C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\icudt_no_CJK.lfu7j35m59.dat.gz
-C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\CyclingBlog.wi5i29ob00.wasm.gz
-C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\CyclingBlog.uo4oatztfb.pdb.gz
 C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\dotnet.js.gz
 C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\CyclingBlog.staticwebassets.runtime.json
 C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\CyclingBlog.staticwebassets.endpoints.json
@@ -854,7 +850,6 @@ C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\b9ns8ndjvi-{
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\iwk7ie06bp-{0}-dorj6igohs-dorj6igohs.gz
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\t6vihlm1g5-{0}-6wyssew5xi-6wyssew5xi.gz
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\7c5ylujeq7-{0}-tiw8mwu3fk-tiw8mwu3fk.gz
-C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\vyzc4mwjke-{0}-uzebb1l3k8-uzebb1l3k8.gz
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\x5hudsovfp-{0}-8br0rpc5j3-8br0rpc5j3.gz
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\g819thx0ku-{0}-w3qd1tpl0e-w3qd1tpl0e.gz
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\3p754eqzai-{0}-ato3fn3juu-ato3fn3juu.gz
@@ -1064,9 +1059,6 @@ C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\spc9zo1qhp-{
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\38cl2118hy-{0}-tjcz0u77k5-tjcz0u77k5.gz
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\ct3k000avd-{0}-tptq2av103-tptq2av103.gz
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\p0ekj86mc5-{0}-lfu7j35m59-lfu7j35m59.gz
-C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\d51jvikc48-{0}-wi5i29ob00-wi5i29ob00.gz
-C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\tcvsbc1b9t-{0}-uo4oatztfb-uo4oatztfb.gz
-C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\5lbbzv9g2j-{0}-ti9ikhtyya-ti9ikhtyya.gz
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\staticwebassets.build.json
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\staticwebassets.build.json.cache
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\staticwebassets.development.json
@@ -1077,3 +1069,12 @@ C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\CyclingBlog.dll
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\refint\CyclingBlog.dll
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\CyclingBlog.pdb
 C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\ref\CyclingBlog.dll
+C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\CyclingBlog.n3osdso3oi.wasm
+C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\CyclingBlog.2slqlgt0sp.pdb
+C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\CyclingBlog.n3osdso3oi.wasm.gz
+C:\workspace\dotNetCore\cycling-blog\bin\Release\net10.0\wwwroot\_framework\CyclingBlog.2slqlgt0sp.pdb.gz
+C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\CyclingBlog.sourcelink.json
+C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\vyzc4mwjke-{0}-jlbpqnmyld-jlbpqnmyld.gz
+C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\d51jvikc48-{0}-n3osdso3oi-n3osdso3oi.gz
+C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\tcvsbc1b9t-{0}-2slqlgt0sp-2slqlgt0sp.gz
+C:\workspace\dotNetCore\cycling-blog\obj\Release\net10.0\compressed\5lbbzv9g2j-{0}-tkpbfxjlfs-tkpbfxjlfs.gz

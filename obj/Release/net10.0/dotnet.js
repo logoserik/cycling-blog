@@ -5,7 +5,7 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
   "mainAssemblyName": "CyclingBlog",
   "applicationEnvironment": "Development",
   "resources": {
-    "hash": "sha256-borA7k1bzY9Nqn85t0QDLVCSB62QugwoufPtWACXCC8=",
+    "hash": "sha256-9T7XO8wN9uVjeCE2vTlTduqbHHQYyXBuyDLjwa+nvVc=",
     "jsModuleNative": [
       {
         "name": "dotnet.native.b6l13xorvf.js"
@@ -1242,16 +1242,16 @@ var e=!1;const t=async()=>WebAssembly.validate(new Uint8Array([0,97,115,109,1,0,
       },
       {
         "virtualPath": "CyclingBlog.wasm",
-        "name": "CyclingBlog.wi5i29ob00.wasm",
-        "hash": "sha256-iM1Z5RhUiHeNNvxwb/mn2Fi3ttGCV15aD+rjS2hePuQ=",
+        "name": "CyclingBlog.n3osdso3oi.wasm",
+        "hash": "sha256-A8af+UNnD/YkPv4XF8HIOhK0TQjK+e5UuHyPFvWKCK0=",
         "cache": "force-cache"
       }
     ],
     "pdb": [
       {
         "virtualPath": "CyclingBlog.pdb",
-        "name": "CyclingBlog.uo4oatztfb.pdb",
-        "hash": "sha256-vnvdjxf7CqFOcsl3UR/VvZCk4Yjk6zm0ngV9MfRFzR4=",
+        "name": "CyclingBlog.2slqlgt0sp.pdb",
+        "hash": "sha256-wjVstT9AsV1Ql7UriKK0oI/8CagPspqieLJBxRHhXoI=",
         "cache": "force-cache"
       }
     ]
