@@ -10,17 +10,25 @@ public sealed class BlogContentClient
         .Build();
 
     private readonly HttpClient _http;
+    private List<BlogPost>? _published;
 
     public BlogContentClient(HttpClient http)
     {
         _http = http;
     }
 
-    public async Task<List<BlogPostBrief>> BrowsePostsAsync(int limit)
+    public async Task<List<BlogPost>> LoadPostsAsync()
     {
         var posts = await LoadPublishedPostsAsync();
         return posts
             .OrderByDescending(p => p.PublishedAt ?? DateTimeOffset.MinValue)
+            .ToList();
+    }
+
+    public async Task<List<BlogPostBrief>> BrowsePostsAsync(int limit)
+    {
+        var posts = await LoadPostsAsync();
+        return posts
             .Take(limit)
             .Select(ToBrief)
             .ToList();
@@ -35,6 +43,9 @@ public sealed class BlogContentClient
 
     private async Task<List<BlogPost>> LoadPublishedPostsAsync()
     {
+        if (_published is not null)
+            return _published;
+
         var index = await _http.GetFromJsonAsync<ContentIndexFile>("content/index.json")
                     ?? new ContentIndexFile();
 
@@ -51,6 +62,7 @@ public sealed class BlogContentClient
             results.Add(parsed.Value.Post);
         }
 
+        _published = results;
         return results;
     }
 
@@ -81,7 +93,8 @@ public sealed class BlogContentClient
             Excerpt = GetField(fields, "excerpt"),
             FeatureImage = RewriteContentUrl(GetField(fields, "feature_image")),
             Tags = MarkdownFrontMatter.ParseTags(GetField(fields, "tags")),
-            Html = html
+            Html = html,
+            PlainText = body
         };
 
         var isDraft = MarkdownFrontMatter.ParseBool(GetField(fields, "draft"), defaultValue: false);

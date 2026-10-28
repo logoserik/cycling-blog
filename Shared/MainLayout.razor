@@ -1,7 +1,22 @@
 @inherits LayoutComponentBase
+@inject RideSearchState Search
 
-<div class="nes-container with-title is-centered" id="game-frame">
-    <h1 class="title pixel-title">RID E LOG</h1>
+<div class="nes-container is-centered" id="game-frame">
+    <header class="site-banner">
+        <h1 class="pixel-title">RID E LOG</h1>
+    </header>
+
+    <form class="ride-search" role="search" @onsubmit:preventDefault="true">
+        <label class="nes-text" for="ride-search">Search</label>
+        <input id="ride-search"
+               class="nes-input"
+               type="search"
+               enterkeyhint="search"
+               placeholder="TAG, TITLE, WORDS"
+               autocomplete="off"
+               value="@Search.Query"
+               @oninput="OnSearch" />
+    </form>
 
     <div class="nav-row">
         <NavMenu />
@@ -12,3 +27,6 @@
     </div>
 </div>
 
+@code {
+    private void OnSearch(ChangeEventArgs e) => Search.Set(e.Value?.ToString());
+}

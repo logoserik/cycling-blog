@@ -1,5 +1,8 @@
 @page "/"
 @inject BlogContentClient Blog
+@inject RideSearchState Search
+@inject IJSRuntime JS
+@implements IDisposable
 
 <h2 class="nes-text">Load your next ride</h2>
 
@@ -13,16 +16,24 @@ else if (_state == LoadState.Error)
         <p class="nes-text is-error">@_error</p>
     </div>
 }
-else if (_posts.Count == 0)
+else if (Visible.Count == 0)
 {
-    <div class="nes-text">No published rides yet. Add one in the CMS admin.</div>
+    <div class="nes-text">
+        @(string.IsNullOrWhiteSpace(Search.Query)
+            ? "No published rides yet. Add one in the CMS admin."
+            : "No rides match that search.")
+    </div>
 }
 else
 {
+    @if (!string.IsNullOrWhiteSpace(Search.Query))
+    {
+        <p class="search-count nes-text">@Visible.Count @(Visible.Count == 1 ? "ride" : "rides")</p>
+    }
     <div class="ride-list">
-        @foreach (var post in _posts)
+        @foreach (var post in Visible)
         {
-            <a class="ride-card nes-pointer" href="@($"/ride/{post.Slug}")">
+            <a class="ride-card nes-pointer" href="@($"/ride/{post.Slug}")" @onclick="() => Open(post)" @onclick:preventDefault="true">
                 <div class="ride-card-top nes-container with-title">
                     <p class="title">@post.Title</p>
                 </div>
@@ -31,7 +42,7 @@ else
                     <div class="ride-excerpt nes-text">@post.Excerpt</div>
                     @if (!string.IsNullOrWhiteSpace(post.FeatureImage))
                     {
-                        <img class="ride-thumb" src="@post.FeatureImage" alt="@post.Title" loading="lazy" />
+                        <img class="ride-thumb" src="@post.FeatureImage" alt="" loading="lazy" />
                     }
                     @if (post.Tags.Count > 0)
                     {
@@ -48,24 +59,128 @@ else
     </div>
 }
 
+@if (_open is not null)
+{
+    <div class="ride-overlay" @ref="_overlay" tabindex="-1" @onclick="CloseAsync" @onkeydown="OnOverlayKey">
+        <article class="ride-overlay-panel" role="dialog" aria-modal="true" aria-labelledby="ride-overlay-title" @onclick:stopPropagation="true">
+            <div class="ride-overlay-bar">
+                <button type="button" class="nes-btn is-error ride-close" @onclick="CloseAsync">Close</button>
+            </div>
+
+            <h2 id="ride-overlay-title" class="nes-text">@_open.Title</h2>
+
+            @if (!string.IsNullOrWhiteSpace(_open.FeatureImage))
+            {
+                <img class="ride-photo" src="@_open.FeatureImage" alt="@_open.Title" />
+            }
+
+            <div class="ride-meta nes-text">
+                <span>@_open.PublishedAt?.ToString("yyyy-MM-dd")</span>
+                @if (_open.Tags.Count > 0)
+                {
+                    <span class="ride-tags-inline">
+                        @foreach (var tag in _open.Tags)
+                        {
+                            <span class="nes-badge">@tag</span>
+                        }
+                    </span>
+                }
+            </div>
+
+            <div class="ride-body" data-testid="ride-html">
+                @((MarkupString)_open.Html)
+            </div>
+        </article>
+    </div>
+}
+
 @code {
     private enum LoadState { Loading, Ready, Error }
     private LoadState _state = LoadState.Loading;
     private string? _error;
-    private List<BlogPostBrief> _posts = new();
+    private List<BlogPost> _posts = new();
+    private BlogPost? _open;
+    private ElementReference _overlay;
+    private bool _focusOverlay;
+
+    private List<BlogPost> Visible => _posts
+        .Where(p => RideSearch.Matches(Search.Query, p.Title, p.Tags, p.PlainText, p.Excerpt))
+        .ToList();
+
+    protected override void OnInitialized()
+    {
+        Search.Changed += OnSearchChanged;
+    }
+
+    private void OnSearchChanged() => _ = InvokeAsync(StateHasChanged);
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             _state = LoadState.Loading;
-            _posts = await Blog.BrowsePostsAsync(limit: 20);
+            _posts = await Blog.LoadPostsAsync();
             _state = LoadState.Ready;
         }
         catch (Exception ex)
         {
             _state = LoadState.Error;
             _error = ex.Message;
+        }
+    }
+
+    private async Task Open(BlogPost post)
+    {
+        _open = post;
+        _focusOverlay = true;
+        await SetScrollLock(true);
+    }
+
+    private async Task CloseAsync()
+    {
+        _open = null;
+        _focusOverlay = false;
+        await SetScrollLock(false);
+    }
+
+    private async Task OnOverlayKey(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+            await CloseAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_focusOverlay && _open is not null)
+        {
+            _focusOverlay = false;
+            try
+            {
+                await _overlay.FocusAsync();
+            }
+            catch (JSException)
+            {
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        Search.Changed -= OnSearchChanged;
+        _ = SetScrollLock(false);
+    }
+
+    private async Task SetScrollLock(bool locked)
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("cyclingBlog.setScrollLock", locked);
+        }
+        catch (JSException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
         }
     }
 }

@@ -13,6 +13,7 @@ public class BlogPostBrief
 public sealed class BlogPost : BlogPostBrief
 {
     public string Html { get; set; } = "";
+    public string PlainText { get; set; } = "";
 }
 
 internal sealed class ContentIndexFile
