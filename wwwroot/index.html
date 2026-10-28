@@ -20,6 +20,15 @@
         <span>Powered by Blazor + Sveltia CMS</span>
     </div>
 
+    <script>
+        window.cyclingBlog = {
+            setScrollLock: function (locked) {
+                var value = locked ? "hidden" : "";
+                document.documentElement.style.overflow = value;
+                document.body.style.overflow = value;
+            }
+        };
+    </script>
     <script src="_framework/blazor.webassembly.js"></script>
 </body>
 </html>

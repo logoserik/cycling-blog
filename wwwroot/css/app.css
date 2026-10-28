@@ -1,15 +1,13 @@
-/* Light-mode 8-bit theme on top of NES.css
-   Desktop canvas: 1280x720. iPhone / iPad use fluid full-viewport layout. */
+/* Light-mode 8-bit theme. Layout is a compact iPhone column (max 430px). */
 
 :root {
     --cream: #f6f0d8;
     --ink: #000;
-    --frame-width: 1280px;
-    --frame-min-height: 720px;
+    --phone: 430px;
 }
 
 html {
-    font-size: 18px;
+    font-size: 12px;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
 }
@@ -22,249 +20,326 @@ body {
 
 body {
     margin: 0;
-    background: var(--cream);
+    background: #e7e0c4;
+    color: var(--ink);
     font-family: "Press Start 2P", monospace;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
 #app {
-    min-height: calc(100dvh - 4.5rem);
+    min-height: 100dvh;
     display: flex;
     justify-content: center;
 }
 
 #game-frame {
-    width: min(var(--frame-width), 100%);
-    min-height: var(--frame-min-height);
-    margin: 24px auto;
-    padding: 32px 40px 40px;
+    width: min(var(--phone), 100%);
+    min-height: 100dvh;
+    margin: 0;
+    padding:
+        calc(10px + env(safe-area-inset-top))
+        calc(12px + env(safe-area-inset-right))
+        calc(16px + env(safe-area-inset-bottom))
+        calc(12px + env(safe-area-inset-left));
     box-sizing: border-box;
-    border: 4px solid var(--ink);
+    background: var(--cream);
+    border: none;
     text-align: left;
 }
 
-#game-frame.is-centered {
+#game-frame.is-centered,
+#game-frame.nes-container {
     text-align: left;
+    margin: 0;
+}
+
+.site-banner {
+    text-align: center;
+    margin: 0 0 10px;
+    padding: 2px 0 8px;
+    border-bottom: 4px solid var(--ink);
 }
 
 .pixel-title {
-    letter-spacing: 2px;
-    font-size: 1.25rem;
+    letter-spacing: 1px;
+    font-size: 1rem;
+    line-height: 1.5;
     text-align: center;
+    margin: 0;
+}
+
+.ride-search {
+    margin: 0 0 10px;
+}
+
+.ride-search label {
+    display: block;
+    font-size: 0.62rem;
+    margin: 0 0 6px;
+}
+
+.ride-search .nes-input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-family: "Press Start 2P", monospace;
+    font-size: 0.62rem;
+    line-height: 1.4;
+    min-height: 44px;
+    margin: 0;
 }
 
 .nav-row {
-    margin: 16px 0 8px;
+    margin: 4px 0 8px;
 }
 
 .nes-nav {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     justify-content: center;
-    flex-wrap: wrap;
 }
 
 .nes-nav .nes-btn {
-    min-height: 48px;
-    min-width: 132px;
-    padding: 10px 18px;
-    font-size: 0.85rem;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    margin: 0;
+    padding: 8px 4px;
+    font-size: 0.62rem;
 }
 
 .content-row {
-    margin-top: 16px;
+    margin-top: 8px;
 }
 
 .content-row > h2.nes-text {
-    font-size: 1.1rem;
+    font-size: 0.78rem;
+    line-height: 1.6;
     text-align: center;
-    margin: 8px 0 24px;
+    margin: 4px 0 12px;
+}
+
+.search-count {
+    margin: 0 0 8px;
+    font-size: 0.62rem;
+    text-align: center;
 }
 
 .ride-list {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
-    padding: 8px 0;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 0;
 }
 
 .ride-card {
+    display: block;
     text-decoration: none;
     color: inherit;
+    overflow-wrap: anywhere;
+}
+
+.ride-card .nes-container {
+    margin: 0;
+    padding: 1.15rem 0.55rem 0.45rem;
+}
+
+.ride-card .nes-container.with-title > .title {
+    display: block;
+    width: fit-content;
+    max-width: calc(100% - 8px);
+    white-space: normal;
+    line-height: 1.45;
+    font-size: 0.68rem;
+    margin: -1.55rem 0 0.45rem;
 }
 
 .ride-card-body {
-    padding: 14px 8px 8px;
+    padding: 8px 2px 2px;
 }
 
 .ride-thumb {
     width: 100%;
-    height: 240px;
+    height: 132px;
     object-fit: cover;
     border: 3px solid var(--ink);
-    margin-top: 14px;
+    margin-top: 8px;
+    display: block;
+    background: #fff;
 }
 
 .ride-date {
-    margin-bottom: 10px;
-    font-size: 0.8rem;
+    margin-bottom: 6px;
+    font-size: 0.62rem;
 }
 
 .ride-excerpt {
-    min-height: 4.5rem;
     overflow: hidden;
-    line-height: 1.6;
-    font-size: 0.72rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-height: 1.65;
+    font-size: 0.66rem;
 }
 
 .ride-tags,
 .ride-tags-inline {
-    margin-top: 12px;
+    margin-top: 8px;
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
 }
 
-.ride-detail h2.nes-text {
-    font-size: 1.2rem;
-    line-height: 1.5;
-    margin-bottom: 16px;
+.ride-tags .nes-badge,
+.ride-tags-inline .nes-badge {
+    font-size: 0.58rem;
 }
 
-.ride-detail .ride-hero {
+.ride-detail h2.nes-text,
+.ride-overlay-panel h2.nes-text {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin: 0 0 10px;
+    overflow-wrap: anywhere;
+}
+
+.ride-photo,
+.ride-body img {
     width: 100%;
-    max-height: 420px;
-    object-fit: cover;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
     border: 3px solid var(--ink);
-    margin-bottom: 18px;
+    margin: 10px 0;
+    background: #fff;
 }
 
 .ride-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 8px;
     align-items: center;
-    margin-bottom: 18px;
-    font-size: 0.8rem;
+    margin-bottom: 10px;
+    font-size: 0.62rem;
 }
 
-.ride-html .ride-body {
-    padding: 12px 4px;
-    font-size: 0.78rem;
-    line-height: 1.7;
+.ride-body {
+    font-size: 0.72rem;
+    line-height: 1.8;
     text-align: left;
+    overflow-wrap: anywhere;
 }
 
-.ride-html h1,
-.ride-html h2,
-.ride-html h3,
 .ride-body h1,
 .ride-body h2,
 .ride-body h3 {
-    font-size: 1rem;
-    line-height: 1.5;
+    font-size: 0.78rem;
+    line-height: 1.55;
 }
 
-.ride-html p,
-.ride-html li,
 .ride-body p,
 .ride-body li {
-    line-height: 1.7;
+    line-height: 1.8;
+    margin: 0 0 12px;
 }
 
-.ride-html img,
-.ride-body img,
-.ride-html figure,
 .ride-body figure {
+    margin: 10px 0;
     max-width: 100%;
 }
 
-.ride-html img,
-.ride-body img {
-    height: auto;
-    display: block;
-    border: 3px solid var(--ink);
-    margin: 16px 0;
-}
-
-.ride-html figcaption,
 .ride-body figcaption {
-    font-size: 0.65rem;
-    margin-bottom: 16px;
+    font-size: 0.58rem;
+    line-height: 1.6;
+    margin-top: 4px;
 }
 
 .pixel-footer {
-    margin: 16px 0 24px;
+    width: min(var(--phone), 100%);
+    margin: 0 auto;
+    padding: 8px 12px calc(12px + env(safe-area-inset-bottom));
+    box-sizing: border-box;
     text-align: center;
-    font-size: 0.7rem;
+    font-size: 0.58rem;
+    line-height: 1.6;
+    background: var(--cream);
 }
 
-/* Below 1280: fill the viewport (small laptops, iPad landscape) */
-@media (max-width: 1279px) {
-    html {
-        font-size: 16px;
+.ride-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    background: rgba(0, 0, 0, 0.62);
+    display: flex;
+    justify-content: center;
+}
+
+.ride-overlay:focus {
+    outline: none;
+}
+
+.ride-overlay-panel {
+    width: min(var(--phone), 100%);
+    height: 100%;
+    max-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    background: var(--cream);
+    box-sizing: border-box;
+    padding:
+        calc(8px + env(safe-area-inset-top))
+        12px
+        calc(18px + env(safe-area-inset-bottom));
+}
+
+.ride-overlay-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    justify-content: flex-end;
+    padding: 4px 0 8px;
+    background: var(--cream);
+}
+
+.ride-close {
+    min-height: 44px;
+    margin: 0;
+    font-size: 0.62rem;
+}
+
+@media (min-width: 480px) {
+    #app {
+        min-height: 100dvh;
+        align-items: flex-start;
+        padding: 16px 0 0;
+        box-sizing: border-box;
     }
 
     #game-frame {
+        min-height: calc(100dvh - 16px);
+        border: 4px solid var(--ink);
+    }
+
+    .pixel-footer {
+        border: 4px solid var(--ink);
+        border-top: none;
+        margin-bottom: 16px;
+    }
+
+    .ride-overlay-panel {
+        border-left: 4px solid var(--ink);
+        border-right: 4px solid var(--ink);
+    }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+    #game-frame,
+    .ride-overlay-panel,
+    .pixel-footer {
         width: 100%;
-        min-height: 100dvh;
-        margin: 0;
-        border-left: none;
-        border-right: none;
-        border-radius: 0;
-    }
-}
-
-/* iPad portrait */
-@media (min-width: 768px) and (max-width: 1024px) {
-    #game-frame {
-        padding: 28px 28px 36px;
-    }
-
-    .ride-thumb {
-        height: 220px;
-    }
-}
-
-/* iPhone and other phones */
-@media (max-width: 767px) {
-    html {
-        font-size: 14px;
-    }
-
-    #game-frame {
-        min-height: 100dvh;
-        margin: 0;
-        padding: 18px 14px 28px;
-        border-width: 0;
-    }
-
-    .pixel-title {
-        font-size: 1rem;
-    }
-
-    .ride-list {
-        grid-template-columns: 1fr;
-        gap: 18px;
-    }
-
-    .ride-thumb {
-        height: 200px;
-    }
-
-    .nes-nav .nes-btn {
-        flex: 1 1 140px;
-        min-height: 44px;
-    }
-
-    .ride-detail .ride-hero {
-        max-height: 240px;
-    }
-}
-
-/* iPhone SE / narrow */
-@media (max-width: 390px) {
-    html {
-        font-size: 13px;
+        max-width: none;
     }
 }

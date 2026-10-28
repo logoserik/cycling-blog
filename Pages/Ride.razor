@@ -22,7 +22,7 @@ else
 
         @if (!string.IsNullOrWhiteSpace(_post.FeatureImage))
         {
-            <img class="ride-hero" src="@_post.FeatureImage" alt="@_post.Title" />
+            <img class="ride-photo" src="@_post.FeatureImage" alt="@_post.Title" />
         }
 
         <div class="ride-meta nes-text">
@@ -38,11 +38,8 @@ else
             }
         </div>
 
-        <div class="ride-html nes-container with-title" data-testid="ride-html">
-            <p class="title">Ride Log</p>
-            <div class="ride-body">
-                @((MarkupString)_post.Html)
-            </div>
+        <div class="ride-body" data-testid="ride-html">
+            @((MarkupString)_post.Html)
         </div>
     </div>
 }

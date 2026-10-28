@@ -7,5 +7,6 @@ builder.RootComponents.Add<CyclingBlog.App>("#app");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 builder.Services.AddScoped<BlogContentClient>();
+builder.Services.AddScoped<RideSearchState>();
 
 await builder.Build().RunAsync();
