@@ -1,0 +1,21 @@
+{
+  "name": "web-content-monitor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local Playwright single-page content change checker (POC)",
+  "type": "module",
+  "scripts": {
+    "check": "node src/check.mjs",
+    "check:headed": "HEADED=1 node src/check.mjs",
+    "auth:save": "node src/save-auth.mjs",
+    "test": "node src/lib/normalize.test.mjs",
+    "postinstall": "playwright install chromium"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "playwright": "^1.51.0"
+  }
+}

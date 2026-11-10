@@ -6,3 +6,10 @@ _publish_test/
 .vs/
 *.user
 *.suo
+
+# web-content-monitor local secrets / runtime
+web-content-monitor/node_modules/
+web-content-monitor/.env
+web-content-monitor/data/
+web-content-monitor/.auth/
+
