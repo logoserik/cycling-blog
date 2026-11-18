@@ -4,7 +4,7 @@
 backend:
   name: github
   repo: logoserik/cycling-blog
-  branch: main
+  branch: master
 
 # Files land under wwwroot so Blazor/GitHub Pages can serve them as static assets.
 media_folder: wwwroot/uploads
