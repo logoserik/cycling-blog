@@ -59,28 +59,47 @@ These are two different locks:
 
 | Control | What it governs |
 |---|---|
-| **Branch protection** on `master` | Who may **change** `master` (PR + approval + CI required) |
+| **Ruleset** on `master` | Who may **change** `master` (PR + approval + CI required) |
 | **Deployment branches** on `uat` / `production` | Which workflow branch may **publish** to that environment |
 
 So yes: set environment deployment branches to **`master`**. That means “Run workflow” for Deploy should be started from `master` (after the PR is merged). It does **not** allow direct pushes to `master`, and it blocks deploying a random feature branch straight to UAT/prod.
 
 Intended path: feature branch → approved PR → merge to protected `master` → manually run Deploy from `master`.
 
-### 2) Branch protection on `master`
+### 2) Protect `master` with a **Ruleset** (current GitHub UI)
 
-Repo → **Settings** → **Branches** → rule for `master`:
+GitHub moved most of this out of classic **Settings → Branches**. Use:
 
-| Setting | Value |
+**Settings → Rules → Rulesets → New ruleset → New branch ruleset**
+
+| Field | Value |
 |---|---|
-| Require a pull request before merging | On |
-| Require approvals | 1+ (your account / release owners) |
-| Require review from Code Owners | On (uses `.github/CODEOWNERS`) |
-| Restrict who can push / dismiss | On — only named humans (not broad write; not unknown agents) |
-| Require status checks | On → require **`Build & verify`** (from `CI`) |
-| Require branches to be up to date | On (recommended) |
-| Do not allow bypassing the above settings | On (recommended) |
-| Allow force pushes | Off |
-| Allow deletions | Off |
+| Ruleset name | e.g. `protect-master` |
+| Enforcement status | **Active** |
+| Bypass list | **Leave empty** (this replaces “Do not allow bypassing…”) |
+| Target branches | **Include by name** → `master` (or **Include default branch**) |
+
+Then under **Branch protections**, enable these rules (names match the Rulesets page):
+
+| Ruleset rule (what you see) | Set to | Old branch-protection name (if you were searching for it) |
+|---|---|---|
+| **Restrict deletions** | On (usually default) | Allow deletions → Off |
+| **Block force pushes** | On (usually default) | Allow force pushes → Off |
+| **Require a pull request before merging** | On | same name |
+| → Required approvals | `1` (you / release owners) | Require approvals |
+| → Require review from Code Owners | On | same idea |
+| → Restrict who can dismiss pull request reviews | On → only you / release owners | part of “Restrict who can push / dismiss” |
+| **Require status checks to pass before merging** | On | Require status checks |
+| → Status checks to add | `Build & verify` (from the `CI` workflow) | same |
+| → **Require branches to be up to date before merging** | On (recommended) | same checkbox, nested under status checks |
+| **Restrict updates** | On (recommended) | rest of “Restrict who can push…” — blocks direct pushes; changes go through PRs unless someone is on the Bypass list |
+
+Notes:
+
+- You will **not** find “Allow deletions”, “Allow force pushes”, or “Do not allow bypassing” as those exact classic labels on the Rulesets page.
+- **Bypass list empty** = nobody skips the rules (admins included, unless you later add them).
+- After the first CI run exists, the check name `Build & verify` should appear when you search/add required status checks. If it does not yet, type the name exactly and add it.
+- Classic **Settings → Branches → Add classic branch protection rule** still exists on some accounts, but Rulesets is what GitHub documents now: [Creating rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository), [Available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
 
 Your reading is correct: only approved PRs should land on `master`. Agents/authors open PRs; privileged users merge.
 
