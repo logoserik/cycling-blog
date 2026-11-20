@@ -1,0 +1,224 @@
+name: Deploy
+
+# No push/merge auto-deploy. Kick off immediately via "Run workflow",
+# or enable the schedule block below when you want a recurring window.
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: What to do
+        type: choice
+        required: true
+        options:
+          - deploy-uat
+          - deploy-production
+          - promote-uat-to-production
+        default: deploy-uat
+      ref:
+        description: Git branch, tag, or SHA (ignored for promote-uat-to-production)
+        required: true
+        default: master
+  # Uncomment to schedule UAT refreshes (example Monday 09:00 UTC):
+  # schedule:
+  #   - cron: '0 9 * * 1'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  PROD_BASE: /cycling-blog/
+  UAT_BASE: /cycling-blog/uat/
+  UAT_TAG: env/uat
+  PROD_TAG: env/production
+
+jobs:
+  plan:
+    name: Resolve deploy plan
+    runs-on: ubuntu-latest
+    outputs:
+      target_env: ${{ steps.plan.outputs.target_env }}
+      uat_ref: ${{ steps.plan.outputs.uat_ref }}
+      prod_ref: ${{ steps.plan.outputs.prod_ref }}
+      page_url: ${{ steps.plan.outputs.page_url }}
+    steps:
+      - name: Checkout (for tags)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Plan
+        id: plan
+        env:
+          ACTION: ${{ github.event_name == 'schedule' && 'deploy-uat' || inputs.action }}
+          INPUT_REF: ${{ inputs.ref || 'master' }}
+        run: |
+          set -euo pipefail
+
+          resolve_sha() {
+            local ref="$1"
+            git rev-parse --verify "$ref^{commit}"
+          }
+
+          # Existing env tags fall back to master on first-ever deploy.
+          if git rev-parse --verify "refs/tags/${UAT_TAG}" >/dev/null 2>&1; then
+            CURRENT_UAT="$(resolve_sha "refs/tags/${UAT_TAG}")"
+          else
+            CURRENT_UAT="$(resolve_sha origin/master)"
+          fi
+
+          if git rev-parse --verify "refs/tags/${PROD_TAG}" >/dev/null 2>&1; then
+            CURRENT_PROD="$(resolve_sha "refs/tags/${PROD_TAG}")"
+          else
+            CURRENT_PROD="$(resolve_sha origin/master)"
+          fi
+
+          case "$ACTION" in
+            deploy-uat)
+              TARGET_ENV=uat
+              UAT_REF="$(resolve_sha "$INPUT_REF")"
+              PROD_REF="$CURRENT_PROD"
+              PAGE_URL="https://logoserik.github.io/cycling-blog/uat/"
+              ;;
+            deploy-production)
+              TARGET_ENV=production
+              UAT_REF="$CURRENT_UAT"
+              PROD_REF="$(resolve_sha "$INPUT_REF")"
+              PAGE_URL="https://logoserik.github.io/cycling-blog/"
+              ;;
+            promote-uat-to-production)
+              TARGET_ENV=production
+              UAT_REF="$CURRENT_UAT"
+              PROD_REF="$CURRENT_UAT"
+              PAGE_URL="https://logoserik.github.io/cycling-blog/"
+              ;;
+            *)
+              echo "Unknown action: $ACTION" >&2
+              exit 1
+              ;;
+          esac
+
+          {
+            echo "target_env=$TARGET_ENV"
+            echo "uat_ref=$UAT_REF"
+            echo "prod_ref=$PROD_REF"
+            echo "page_url=$PAGE_URL"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "## Deploy plan" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Action: \`$ACTION\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Target environment: \`$TARGET_ENV\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- UAT SHA: \`$UAT_REF\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Production SHA: \`$PROD_REF\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Check URL: $PAGE_URL" >> "$GITHUB_STEP_SUMMARY"
+
+  build:
+    name: Build dual-env site
+    needs: plan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout UAT ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.plan.outputs.uat_ref }}
+          path: src-uat
+
+      - name: Checkout production ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.plan.outputs.prod_ref }}
+          path: src-prod
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Assemble UAT + production
+        run: |
+          bash ./src-prod/scripts/assemble-dual-env-site.sh \
+            --prod-source ./src-prod \
+            --uat-source ./src-uat \
+            --out ./_site \
+            --prod-base "${PROD_BASE}" \
+            --uat-base "${UAT_BASE}"
+
+          python3 - <<'PY'
+          import json, pathlib, os
+          meta_path = pathlib.Path("_site/deploy-meta.json")
+          meta = json.loads(meta_path.read_text())
+          meta["uatSha"] = os.environ["UAT_SHA"]
+          meta["productionSha"] = os.environ["PROD_SHA"]
+          meta["targetEnv"] = os.environ["TARGET_ENV"]
+          meta_path.write_text(json.dumps(meta, indent=2) + "\n")
+          PY
+        env:
+          UAT_SHA: ${{ needs.plan.outputs.uat_ref }}
+          PROD_SHA: ${{ needs.plan.outputs.prod_ref }}
+          TARGET_ENV: ${{ needs.plan.outputs.target_env }}
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+
+  # Approval / wait-timer gate on the uat|production GitHub Environment.
+  # Actual Pages publish still uses the github-pages environment (Pages UI contract).
+  gate:
+    name: Environment gate
+    needs: plan
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.plan.outputs.target_env }}
+      url: ${{ needs.plan.outputs.page_url }}
+    steps:
+      - name: Gate passed
+        run: |
+          echo "Approved for environment: ${{ needs.plan.outputs.target_env }}"
+          echo "Target URL: ${{ needs.plan.outputs.page_url }}"
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: [plan, build, gate]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ needs.plan.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  record:
+    name: Record env tags
+    needs: [plan, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Move floating env tags
+        env:
+          TARGET_ENV: ${{ needs.plan.outputs.target_env }}
+          UAT_REF: ${{ needs.plan.outputs.uat_ref }}
+          PROD_REF: ${{ needs.plan.outputs.prod_ref }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git tag -f "$UAT_TAG" "$UAT_REF"
+          git tag -f "$PROD_TAG" "$PROD_REF"
+          git push -f origin "refs/tags/${UAT_TAG}" "refs/tags/${PROD_TAG}"
+
+          echo "Updated ${UAT_TAG} → ${UAT_REF}"
+          echo "Updated ${PROD_TAG} → ${PROD_REF}"

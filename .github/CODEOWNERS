@@ -1,0 +1,10 @@
+# Default reviewers / privileged owners for the protected default branch.
+# GitHub uses this when "Require review from Code Owners" is enabled on branch protection.
+# Update the handle(s) below if ownership is shared with other humans or bot accounts.
+
+* @logoserik
+
+# CI/CD and release controls — keep these tightly owned.
+/.github/ @logoserik
+/scripts/ @logoserik
+/docs/CICD.md @logoserik
