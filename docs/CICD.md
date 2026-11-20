@@ -66,9 +66,43 @@ So yes: set environment deployment branches to **`master`**. That means “Run w
 
 Intended path: feature branch → approved PR → merge to protected `master` → manually run Deploy from `master`.
 
-### 2) Protect `master` with a **Ruleset** (current GitHub UI)
+### 2) Protect `master` — Rulesets **or** classic branch protection
 
-GitHub moved most of this out of classic **Settings → Branches**. Use:
+Either approach is enough for this repo. **Pick one** (do not stack both with different settings; that gets confusing). Goal is the same: only approved PRs land on `master`.
+
+#### Rulesets vs classic (what actually differs)
+
+| | **Rulesets** | **Classic branch protection** |
+|---|---|---|
+| Where | **Settings → Rules → Rulesets** | **Settings → Branches → Add classic branch protection rule** |
+| Maturity | Newer GitHub model; better for orgs / many repos later | Older UI; still fully supported |
+| Targeting | Patterns, default branch, multiple rulesets | Branch name / pattern per rule |
+| Bypass | Explicit **Bypass list** (leave empty = nobody bypasses) | **Do not allow bypassing the above settings** checkbox; admins historically could bypass unless locked down |
+| Labels | “Restrict deletions”, “Block force pushes”, … | “Allow deletions”, “Allow force pushes”, … (inverted wording) |
+| Extra power | Commit metadata rules, tag rules, org-level rulesets (on paid plans) | Enough for PR + checks + push restrictions |
+| For this blog | Fine | Also fine — and matches the checkbox names you were looking for |
+
+**Recommendation for you right now:** use **classic** if you already opened Branches and want those exact labels; use **Rulesets** if you prefer the newer page. Functionally for “PR + 1 approval + CI + no force push” they are equivalent.
+
+#### Option A — Classic branch protection
+
+**Settings → Branches → Add classic branch protection rule**
+
+| Setting | Value |
+|---|---|
+| Branch name pattern | `master` |
+| Require a pull request before merging | On |
+| Require approvals | `1` |
+| Require review from Code Owners | On |
+| Restrict who can dismiss pull request reviews | On → you / release owners |
+| Restrict who can push to matching branches | On → you / release owners only (optional but good for agent separation) |
+| Require status checks to pass before merging | On → add **`Build & verify`** |
+| Require branches to be up to date before merging | On (recommended) |
+| Do not allow bypassing the above settings | On (recommended) |
+| Allow force pushes | **Off** |
+| Allow deletions | **Off** |
+
+#### Option B — Ruleset
 
 **Settings → Rules → Rulesets → New ruleset → New branch ruleset**
 
@@ -76,30 +110,20 @@ GitHub moved most of this out of classic **Settings → Branches**. Use:
 |---|---|
 | Ruleset name | e.g. `protect-master` |
 | Enforcement status | **Active** |
-| Bypass list | **Leave empty** (this replaces “Do not allow bypassing…”) |
-| Target branches | **Include by name** → `master` (or **Include default branch**) |
+| Bypass list | **Leave empty** |
+| Target branches | Include `master` (or include default branch) |
 
-Then under **Branch protections**, enable these rules (names match the Rulesets page):
+Branch protections to enable:
 
-| Ruleset rule (what you see) | Set to | Old branch-protection name (if you were searching for it) |
-|---|---|---|
-| **Restrict deletions** | On (usually default) | Allow deletions → Off |
-| **Block force pushes** | On (usually default) | Allow force pushes → Off |
-| **Require a pull request before merging** | On | same name |
-| → Required approvals | `1` (you / release owners) | Require approvals |
-| → Require review from Code Owners | On | same idea |
-| → Restrict who can dismiss pull request reviews | On → only you / release owners | part of “Restrict who can push / dismiss” |
-| **Require status checks to pass before merging** | On | Require status checks |
-| → Status checks to add | `Build & verify` (from the `CI` workflow) | same |
-| → **Require branches to be up to date before merging** | On (recommended) | same checkbox, nested under status checks |
-| **Restrict updates** | On (recommended) | rest of “Restrict who can push…” — blocks direct pushes; changes go through PRs unless someone is on the Bypass list |
+| Ruleset rule | Set to |
+|---|---|
+| Restrict deletions | On |
+| Block force pushes | On |
+| Require a pull request before merging | On → approvals `1`, Code Owners on, restrict dismiss to you |
+| Require status checks to pass before merging | On → `Build & verify` + require up to date |
+| Restrict updates | On (recommended; blocks direct pushes) |
 
-Notes:
-
-- You will **not** find “Allow deletions”, “Allow force pushes”, or “Do not allow bypassing” as those exact classic labels on the Rulesets page.
-- **Bypass list empty** = nobody skips the rules (admins included, unless you later add them).
-- After the first CI run exists, the check name `Build & verify` should appear when you search/add required status checks. If it does not yet, type the name exactly and add it.
-- Classic **Settings → Branches → Add classic branch protection rule** still exists on some accounts, but Rulesets is what GitHub documents now: [Creating rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository), [Available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
+Docs: [Creating rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/creating-rulesets-for-a-repository), [Available rules](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
 
 Your reading is correct: only approved PRs should land on `master`. Agents/authors open PRs; privileged users merge.
 
