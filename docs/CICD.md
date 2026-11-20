@@ -42,7 +42,7 @@ Repo → **Settings** → **Environments** → create:
 
 **`uat`**
 - URL: `https://logoserik.github.io/cycling-blog/uat/`
-- Optional: required reviewers (good when agents open deploys)
+- **Required reviewers**: leave **off / empty** — UAT should deploy with no approval wait so you can kick it off immediately after merge
 - Deployment branches: selected branches → allow `master` (and this deploy workflow’s default branch)
 
 **`production`**
@@ -51,7 +51,7 @@ Repo → **Settings** → **Environments** → create:
 - Optional: wait timer (e.g. 5 minutes) as a freeze/think gate
 - Deployment branches: same as above
 
-Keep the auto-created `github-pages` environment (Pages publish target). The workflow first enters `uat` or `production` as an **approval gate**, then publishes through `github-pages`.
+Keep the auto-created `github-pages` environment (Pages publish target). The workflow enters `uat` or `production` first (production can pause for reviewers), then publishes through `github-pages`.
 
 ### 2) Branch protection on `master`
 
