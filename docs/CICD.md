@@ -43,15 +43,28 @@ Repo → **Settings** → **Environments** → create:
 **`uat`**
 - URL: `https://logoserik.github.io/cycling-blog/uat/`
 - **Required reviewers**: leave **off / empty** — UAT should deploy with no approval wait so you can kick it off immediately after merge
-- Deployment branches: selected branches → allow `master` (and this deploy workflow’s default branch)
+- **Deployment branches**: Selected branches → **`master` only**
 
 **`production`**
 - URL: `https://logoserik.github.io/cycling-blog/`
 - **Required reviewers**: you (and future release owners only)
 - Optional: wait timer (e.g. 5 minutes) as a freeze/think gate
-- Deployment branches: same as above
+- **Deployment branches**: Selected branches → **`master` only** (same as UAT)
 
 Keep the auto-created `github-pages` environment (Pages publish target). The workflow enters `uat` or `production` first (production can pause for reviewers), then publishes through `github-pages`.
+
+#### Why “deployment branches = master” does **not** weaken branch protection
+
+These are two different locks:
+
+| Control | What it governs |
+|---|---|
+| **Branch protection** on `master` | Who may **change** `master` (PR + approval + CI required) |
+| **Deployment branches** on `uat` / `production` | Which workflow branch may **publish** to that environment |
+
+So yes: set environment deployment branches to **`master`**. That means “Run workflow” for Deploy should be started from `master` (after the PR is merged). It does **not** allow direct pushes to `master`, and it blocks deploying a random feature branch straight to UAT/prod.
+
+Intended path: feature branch → approved PR → merge to protected `master` → manually run Deploy from `master`.
 
 ### 2) Branch protection on `master`
 
@@ -69,7 +82,7 @@ Repo → **Settings** → **Branches** → rule for `master`:
 | Allow force pushes | Off |
 | Allow deletions | Off |
 
-This is how you separate “authors / agents open PRs” from “only privileged users merge to `master`”.
+Your reading is correct: only approved PRs should land on `master`. Agents/authors open PRs; privileged users merge.
 
 ### 3) Pages
 
